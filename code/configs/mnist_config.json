@@ -1,0 +1,77 @@
+{
+    "name": "Mnist_LeNet",
+
+    "arch": {
+        "type": "MnistModel",
+        "args": {}
+    },
+    "mapper": {
+        "type": "SingleNodeDataParallel",
+        "args": {
+          "n_gpu": 1
+        }
+    },
+    "data_loader": {
+        "type": "MnistDataLoader",
+        "args":{
+            "data_dir": "$(DATA_DIR)mnist/",
+            "batch_size": 128,
+            "shuffle": true,
+            "validation_split": 0.1,
+            "num_workers": 2
+        }
+    },
+    "optimizer": {
+        "type": "Adam",
+        "args":{
+            "lr": 0.001,
+            "weight_decay": 0,
+            "amsgrad": true
+        }
+    },
+    "loss": {
+        "type": "NLLLoss",
+        "args": {}
+    },
+    "metrics": [
+        {
+          "type": "AccuracyTopK",
+          "args": {
+            "k": 1
+          }
+        },
+        {
+          "type": "AccuracyTopK",
+          "args": {
+            "k": 3
+          }
+        }
+    ],
+    "lr_scheduler": {
+        "type": "StepLR",
+        "args": {
+            "step_size": 50,
+            "gamma": 0.1
+        }
+    },
+    "trainer": {
+        "type": "Trainer",
+        "args": {},
+        "extra_args": {
+          "epochs": 100,
+
+          "save_dir": "$(RESULTS_DIR)saved/",
+          "save_period": 1,
+          "keep_last": 30,
+          "verbosity": 2,
+
+          "monitor": "min val_loss",
+          "early_stop": 10,
+
+          "tensorboardX": true
+        }
+    },
+    "testing": {
+      "verbosity": 2
+    }
+}
